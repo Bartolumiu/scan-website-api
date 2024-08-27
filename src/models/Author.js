@@ -1,8 +1,8 @@
-const mongoose = require('mongoose');
+const { Schema, model } = require('mongoose');
 
-const AuthorSchema = new mongoose.Schema({
-    id: { type: String, required: true }, // Author ID
-    type: 'author',
+const AuthorSchema = new Schema({
+    id: { type: String, required: true, unique: true }, // Author ID
+    type: { type: String, default: 'author' }, // Type of document (author)
     attributes: {
         name: { type: String, required: true }, // Author name
         imageURL: { type: String }, // Author image URL
@@ -25,12 +25,12 @@ const AuthorSchema = new mongoose.Schema({
         createdAt: { type: Date, default: Date.now }, // Date of creation
         updatedAt: { type: Date, default: Date.now } // Date of last update
     },
-    relationships: [
-        {
-            id: { type: String, required: true }, // The id of the related entity
-            type: { type: String, required: true }, // The type of the related entity
-            related: { type: String, required: true, enum: ['monochrome', 'main_story', 'adapted_from', 'based_on', 'prequel', 'side_story', 'doujinshi', 'same_franchise', 'shared_universe', 'sequel', 'spin_off', 'alternate_story', 'alternate_version', 'preserialization', 'colored', 'serialization'] }, // The relationship type (manga type)
-            attributes: { type: mongoose.Schema.Types.Mixed, default: {} } // Additional attributes
-        }
-    ]
+    relationships: [{
+        entityType: { type: String, enum: ['manga'], required: true }, // Entity type (manga)
+        entity: { type: String, required: true } // ID of the related manga
+    }],
+}, {
+    _id: false
 });
+
+module.exports = model('Author', AuthorSchema, 'author');
